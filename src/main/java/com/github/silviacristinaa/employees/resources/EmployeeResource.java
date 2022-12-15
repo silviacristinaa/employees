@@ -22,11 +22,14 @@ import com.github.silviacristinaa.employees.exceptions.ConflictException;
 import com.github.silviacristinaa.employees.exceptions.NotFoundException;
 import com.github.silviacristinaa.employees.services.EmployeeService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping(value = "/employees")
 @RequiredArgsConstructor
+@Api(value = "Funcionários", tags = {"Serviço para Controle de Funcionários"})
 public class EmployeeResource {
 	
 	private static final String ID = "/{id}";
@@ -34,16 +37,19 @@ public class EmployeeResource {
 	private final EmployeeService employeeService; 
 	
 	@GetMapping
+	@ApiOperation(value="Retorna todos os funcionários")
 	public ResponseEntity<List<EmployeeResponseDto>> findAll() {
 		return ResponseEntity.ok(employeeService.findAll());
 	}
 
 	@GetMapping(value = ID)
+	@ApiOperation(value="Retorna um funcionário único")
 	public ResponseEntity<EmployeeResponseDto> findById(@PathVariable Long id) throws NotFoundException {
 		return ResponseEntity.ok(employeeService.findOneEmployeeById(id));
 	}
 
 	@PostMapping
+	@ApiOperation(value="Cria um funcionário")
 	public ResponseEntity<Void> create(@RequestBody @Valid EmployeeRequestDto employeeRequestDto) throws ConflictException {
 		URI uri = ServletUriComponentsBuilder
 				.fromCurrentRequest().path(ID).buildAndExpand(employeeService.create(employeeRequestDto).getId()).toUri();
@@ -51,12 +57,14 @@ public class EmployeeResource {
 	}
 
 	@PutMapping(value = ID)
+	@ApiOperation(value="Atualiza um funcionário")
 	public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody @Valid EmployeeRequestDto employeeRequestDto) throws NotFoundException, ConflictException {
 		employeeService.update(id, employeeRequestDto);
 		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping(value = ID)
+	@ApiOperation(value="Deleta um funcionário")
 	public ResponseEntity<Void> delete(@PathVariable Long id) throws NotFoundException {
 		employeeService.delete(id);
 		return ResponseEntity.noContent().build();
