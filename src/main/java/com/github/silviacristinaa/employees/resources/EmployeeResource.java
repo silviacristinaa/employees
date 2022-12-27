@@ -1,10 +1,11 @@
 package com.github.silviacristinaa.employees.resources;
 
 import java.net.URI;
-import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,8 +44,8 @@ public class EmployeeResource {
 	@GetMapping
 	@ApiOperation(value="Retorna todos os funcionários", httpMethod = "GET")
 	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<List<EmployeeResponseDto>> findAll() {
-		return ResponseEntity.ok(employeeService.findAll());
+	public ResponseEntity<Page<EmployeeResponseDto>> findAll(Pageable pageable) {
+		return ResponseEntity.ok(employeeService.findAll(pageable));
 	}
 
 	@GetMapping(value = ID)
