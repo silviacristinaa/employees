@@ -5,6 +5,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,9 +33,16 @@ public class EmployeeServiceImpl implements EmployeeService{
 	private final ModelMapper modelMapper; 
 	
 	@Override
-	public List<EmployeeResponseDto> findAll() {
-		return employeeRepository.findAll().stream().map(employee -> modelMapper.map(employee, EmployeeResponseDto.class))
-				.collect(Collectors.toList());
+	public Page<EmployeeResponseDto> findAll(Pageable pageable) {
+		 List<EmployeeResponseDto> response = 
+				 employeeRepository.findAll().stream().map(employee -> modelMapper.map(employee, EmployeeResponseDto.class))
+				 .collect(Collectors.toList());
+			
+		 final int start = (int)pageable.getOffset();
+		 final int end = Math.min((start + pageable.getPageSize()), response.size());
+			
+		 Page<EmployeeResponseDto> page = new PageImpl<>(response.subList(start, end), pageable, response.size());
+		 return page;
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package com.github.silviacristinaa.employees.services;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.github.silviacristinaa.employees.dtos.requests.EmployeeRequestDto;
 import com.github.silviacristinaa.employees.dtos.requests.EmployeeStatusRequestDto;
@@ -11,7 +12,7 @@ import com.github.silviacristinaa.employees.exceptions.NotFoundException;
 
 public interface EmployeeService {
 
-	List<EmployeeResponseDto> findAll();
+	Page<EmployeeResponseDto> findAll(Pageable pageable);
 	
 	EmployeeResponseDto findOneEmployeeById(Long id) throws NotFoundException;
 	
