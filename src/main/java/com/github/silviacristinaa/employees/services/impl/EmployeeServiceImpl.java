@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.silviacristinaa.employees.dtos.requests.EmployeeRequestDto;
+import com.github.silviacristinaa.employees.dtos.requests.EmployeeStatusRequestDto;
 import com.github.silviacristinaa.employees.dtos.responses.EmployeeResponseDto;
 import com.github.silviacristinaa.employees.entities.Employee;
 import com.github.silviacristinaa.employees.exceptions.ConflictException;
@@ -46,8 +47,19 @@ public class EmployeeServiceImpl implements EmployeeService{
 		findByCpf(employeeRequestDto);
 		return employeeRepository.save(modelMapper.map(employeeRequestDto, Employee.class));
 	}
+	
+	@Override
+	@Transactional
+	public void updateEmployeeStatus(Long id, EmployeeStatusRequestDto employeeStatusRequestDto) throws NotFoundException {
+		Employee employee = findById(id);
+		
+		employee.setEnabled(employeeStatusRequestDto.isEnabled());
+		employee.setId(id);
+		employeeRepository.save(employee); 
+	}
 
 	@Override
+	@Transactional
 	public void update(Long id, EmployeeRequestDto employeeRequestDto) throws NotFoundException, ConflictException {
 		findById(id);
 		findByCpf(employeeRequestDto, id);
@@ -59,6 +71,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 	}
 
 	@Override
+	@Transactional
 	public void delete(Long id) throws NotFoundException {
 		findById(id);
 		employeeRepository.deleteById(id);
@@ -82,4 +95,4 @@ public class EmployeeServiceImpl implements EmployeeService{
 			throw new ConflictException(CPF_ALREADY_REGISTERED_IN_THE_SYSTEM);
 		}
 	}
-}
+}	
