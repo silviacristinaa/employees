@@ -5,16 +5,20 @@ import org.springframework.data.domain.Pageable;
 
 import com.github.silviacristinaa.employees.dtos.requests.EmployeeRequestDto;
 import com.github.silviacristinaa.employees.dtos.requests.EmployeeStatusRequestDto;
+import com.github.silviacristinaa.employees.dtos.responses.EmployeeResponseDataDto;
 import com.github.silviacristinaa.employees.dtos.responses.EmployeeResponseDto;
 import com.github.silviacristinaa.employees.entities.Employee;
+import com.github.silviacristinaa.employees.enums.DepartmentEnum;
 import com.github.silviacristinaa.employees.exceptions.ConflictException;
 import com.github.silviacristinaa.employees.exceptions.NotFoundException;
 
 public interface EmployeeService {
 
-	Page<EmployeeResponseDto> findAll(Pageable pageable);
+	Page<EmployeeResponseDataDto> findAll(Pageable pageable);
 	
-	EmployeeResponseDto findOneEmployeeById(Long id) throws NotFoundException;
+	EmployeeResponseDto findByFilters(DepartmentEnum department, Boolean enabled, Pageable pageable);
+	
+	EmployeeResponseDataDto findOneEmployeeById(Long id) throws NotFoundException;
 	
 	Employee create(EmployeeRequestDto employeeRequestDto) throws ConflictException; 
 	

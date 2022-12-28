@@ -16,13 +16,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.github.silviacristinaa.employees.dtos.requests.EmployeeRequestDto;
 import com.github.silviacristinaa.employees.dtos.requests.EmployeeStatusRequestDto;
+import com.github.silviacristinaa.employees.dtos.responses.EmployeeResponseDataDto;
 import com.github.silviacristinaa.employees.dtos.responses.EmployeeResponseDto;
+import com.github.silviacristinaa.employees.enums.DepartmentEnum;
 import com.github.silviacristinaa.employees.exceptions.ConflictException;
 import com.github.silviacristinaa.employees.exceptions.NotFoundException;
 import com.github.silviacristinaa.employees.services.EmployeeService;
@@ -44,14 +47,24 @@ public class EmployeeResource {
 	@GetMapping
 	@ApiOperation(value="Retorna todos os funcionários", httpMethod = "GET")
 	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<Page<EmployeeResponseDto>> findAll(Pageable pageable) {
+	public ResponseEntity<Page<EmployeeResponseDataDto>> findAll(Pageable pageable) {
 		return ResponseEntity.ok(employeeService.findAll(pageable));
+	}
+	
+	@GetMapping("/filters")
+	@ApiOperation(value= "Retorna os dados de funcionários de acordo com filtros opcionais", httpMethod = "GET")
+	@ResponseStatus(value = HttpStatus.OK)
+	public ResponseEntity<EmployeeResponseDto> findByFilters(
+			@RequestParam(name = "department", required = false) DepartmentEnum department,
+			@RequestParam(name = "enabled", required = false) Boolean enabled,
+			Pageable pageable) {
+		return ResponseEntity.ok(employeeService.findByFilters(department, enabled, pageable));
 	}
 
 	@GetMapping(value = ID)
 	@ApiOperation(value="Retorna um funcionário único", httpMethod = "GET")
 	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<EmployeeResponseDto> findById(@PathVariable Long id) throws NotFoundException {
+	public ResponseEntity<EmployeeResponseDataDto> findById(@PathVariable Long id) throws NotFoundException {
 		return ResponseEntity.ok(employeeService.findOneEmployeeById(id));
 	}
 
