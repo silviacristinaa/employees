@@ -13,8 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.silviacristinaa.employees.dtos.requests.EmployeeRequestDto;
 import com.github.silviacristinaa.employees.dtos.requests.EmployeeStatusRequestDto;
+import com.github.silviacristinaa.employees.dtos.responses.EmployeeResponseDataDto;
 import com.github.silviacristinaa.employees.dtos.responses.EmployeeResponseDto;
+import com.github.silviacristinaa.employees.dtos.responses.EmployeeResponseDto.EmployeeResponseDtoBuilder;
 import com.github.silviacristinaa.employees.entities.Employee;
+import com.github.silviacristinaa.employees.enums.DepartmentEnum;
 import com.github.silviacristinaa.employees.exceptions.ConflictException;
 import com.github.silviacristinaa.employees.exceptions.NotFoundException;
 import com.github.silviacristinaa.employees.repositories.EmployeeRepository;
@@ -33,22 +36,44 @@ public class EmployeeServiceImpl implements EmployeeService{
 	private final ModelMapper modelMapper; 
 	
 	@Override
-	public Page<EmployeeResponseDto> findAll(Pageable pageable) {
-		 List<EmployeeResponseDto> response = 
-				 employeeRepository.findAll().stream().map(employee -> modelMapper.map(employee, EmployeeResponseDto.class))
+	public Page<EmployeeResponseDataDto> findAll(Pageable pageable) {
+		 List<EmployeeResponseDataDto> response = 
+				 employeeRepository.findAll().stream().map(employee -> modelMapper.map(employee, EmployeeResponseDataDto.class))
 				 .collect(Collectors.toList());
 			
 		 final int start = (int)pageable.getOffset();
 		 final int end = Math.min((start + pageable.getPageSize()), response.size());
 			
-		 Page<EmployeeResponseDto> page = new PageImpl<>(response.subList(start, end), pageable, response.size());
+		 Page<EmployeeResponseDataDto> page = new PageImpl<>(response.subList(start, end), pageable, response.size());
 		 return page;
+	}
+	
+	@Override
+	public EmployeeResponseDto findByFilters(DepartmentEnum department, Boolean enabled, Pageable pageable) {
+		
+		List<EmployeeResponseDataDto> response = employeeRepository.findByDepartmentAndStatus(department, enabled)
+				.stream().map(employee -> modelMapper.map(employee, EmployeeResponseDataDto.class))
+				.collect(Collectors.toList());
+		
+		EmployeeResponseDtoBuilder builder = EmployeeResponseDto.builder();
+		
+		Long totalActive = response.stream().filter(employee -> employee.isEnabled()).count();
+		builder.totalActive(totalActive);
+		
+		Long totalInactive = response.stream().filter(employee -> !employee.isEnabled()).count();
+		builder.totalInactive(totalInactive);
+		
+		final int start = (int)pageable.getOffset();
+		final int end = Math.min((start + pageable.getPageSize()), response.size());
+		
+		Page<EmployeeResponseDataDto> page = new PageImpl<>(response.subList(start, end), pageable, response.size());
+		return builder.employeeResponseDataDto(page).build();
 	}
 
 	@Override
-	public EmployeeResponseDto findOneEmployeeById(Long id) throws NotFoundException {
+	public EmployeeResponseDataDto findOneEmployeeById(Long id) throws NotFoundException {
 		Employee employee = findById(id); 
-		return modelMapper.map(employee, EmployeeResponseDto.class);
+		return modelMapper.map(employee, EmployeeResponseDataDto.class);
 	}
 
 	@Override

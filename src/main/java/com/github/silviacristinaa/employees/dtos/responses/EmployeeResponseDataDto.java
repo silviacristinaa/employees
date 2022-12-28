@@ -1,20 +1,20 @@
 package com.github.silviacristinaa.employees.dtos.responses;
 
-import org.springframework.data.domain.Page;
+import com.github.silviacristinaa.employees.enums.DepartmentEnum;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
-public class EmployeeResponseDto {
+public class EmployeeResponseDataDto {
 	
-	private Long totalActive;
-	private Long totalInactive;
-	private Page<EmployeeResponseDataDto> employeeResponseDataDto;
+	private Long id;
+	private String name;
+	private String cpf; 
+	private DepartmentEnum department;
+	private boolean enabled;
 }
