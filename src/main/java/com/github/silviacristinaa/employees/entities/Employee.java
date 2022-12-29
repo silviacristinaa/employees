@@ -10,9 +10,13 @@ import javax.persistence.Id;
 
 import com.github.silviacristinaa.employees.enums.DepartmentEnum;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter @Setter
 @Entity
 public class Employee {
